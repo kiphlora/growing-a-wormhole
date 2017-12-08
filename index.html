@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Growing a Wormhole</title>
+
+	<link href="https://fonts.googleapis.com/css?family=Dosis:200" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/project-theme.css">
+	<link rel="stylesheet" type="text/css" href="css/page-style.css">
+	<link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css">
+
+	<script src="js/d3/d3.min.js"></script>
+	<script src="js/util.js"></script>
+	<style>
+
+		
+
+	</style>
+</head>
+<body>
+	<button class="open-button">Open</button>
+  <div class="container">
+		<header class="hero-header">
+			<div class="my-name">Growing a Wormhole</div>
+			<div class="nav">
+				<a href="http://www.kiphlora.com"><div class="portfolio-nav"><i class="fa fa-home" aria-hidden="true"></i></div></a>
+			</div>
+		</header>
+
+		<div class="hero-content-wrapper">
+			<div class="intro-content">
+				<div id="flats-home-container">
+					<svg id="flats-home"></svg>
+				</div>
+			</div>
+		</div>
+		<footer class="hero-footer">
+			<div class="footer-info">
+			<a href="https://github.com/kiphlora/growing-a-wormhole"><div><i class="fa fa-github" aria-hidden="true"></i> Growing a Wormhole</div></a>
+			<a href="mailto:kiphlora@gmail.com" target="_top"><div><i class="fa fa-envelope" aria-hidden="true"></i>
+ kiphlora@gmail.com</div></a>
+			<p>&copy 2017 Brett Moran</p>
+		</div>
+		</footer>
+  </div>
+
+
+  <script>
+  	var header = d3.select("header");
+  	var footer = d3.select("footer");
+  	var content = d3.select(".hero-content-wrapper");
+
+  	var flat = [];
+  	var flat_circles;
+  	var startingRadius = 8;
+  	var radiusGrowthRate = 3;
+    var strokeWidth = 6;
+
+  	header.classed("hero-header-start", true);
+  	footer.classed("hero-footer-start", true);
+  	content.classed("hero-content-wrapper-start", true);
+
+    var foodToBeEaten = [];
+    var canStartTransition = true;
+
+  	var openButton = d3.select(".open-button")
+  		.on("click", function(){
+  			transitionHeaderFooter();
+  			initFlat();
+  		})
+  	
+
+  	function transitionHeaderFooter() {
+  		header.classed("hero-header-start", false);
+  		footer.classed("hero-footer-start", false);
+  		openButton.classed("open-button-end", true);
+  	}
+
+  	function initFlat() {
+  		flat.push({ cx: 960/2, cy: 490/2 });
+
+  		flat_circles = svg.selectAll(".flat-circles").data(flat)
+  			.enter().append("circle")
+  				.attr("class", "flat-circles")
+  				.attr("cx", function(d,i){ return d.cx; })
+  				.attr("cy", function(d,i){ return d.cy; })
+  				.attr("r", function(d,i){ return startingRadius; })
+  				.attr("fill", "#0055ff")
+  				.attr("stroke", "#ff9900")
+  				.attr("fill-opacity", function(d,i){ return clamp(1 - (i/flat.length), 0.3, 1); })
+  				.attr("stroke-width", strokeWidth);
+  	}
+
+  	function updateFlat(new_circle) {
+      canStartTransition = false;
+  		flat.push(new_circle);
+
+  		flat_circles = svg.selectAll(".flat-circles").data(flat);
+
+
+  		flat_circles
+  			.enter().append("circle")
+  				.attr("class", "flat-circles")
+  				.attr("cx", function(d,i){ return d.cx; })
+  				.attr("cy", function(d,i){ return d.cy; })  				
+  				.attr("fill", "#0055ff")
+  				.attr("stroke", "#ff9900")
+  				.attr("fill-opacity", function(d,i){ return clamp(1 - (i/flat.length), 0.3, 1); })
+  				.attr("stroke-width", strokeWidth)
+          .attr("r", 0)
+        .transition()
+          .duration(600)
+          .ease(d3.easeElastic)
+          .attr("r", function(d,i){ return startingRadius + radiusGrowthRate * i; });
+
+      new_circle.tempRect.remove();
+
+  		flat_circles
+  			.transition()
+  				.delay(function(d,i){ return i * 800 / flat.length; })
+  				// .duration(200 * flat.length)
+          .duration(2000)
+          .ease(d3.easeQuadInOut)
+  				.attr("cx", new_circle.cx)
+  				.attr("cy", new_circle.cy)
+  			.on("end", function(d,i){
+          if (i === 0) {
+            if (foodToBeEaten.length > 0)
+              updateFlat(foodToBeEaten.shift());
+            else
+              canStartTransition = true;  
+          }
+          
+  			});
+  	}
+
+  	var svg = content.select("#flats-home")
+  			.attr("width", 960)
+  			.attr("height", 490);
+
+  	svg.on("click", function(){
+  		var mouse_coords = d3.mouse(this);
+      var cx = mouse_coords[0];
+      var cy = mouse_coords[1];
+      var tempRect = svg.append("circle")
+          .attr("cx", cx)
+          .attr("cy", cy)
+          .attr("r", 3)
+          .attr("fill", "#ff0099")
+          // .attr("stroke", "#ff9900")
+          .attr("fill-opacity", 1);
+          // .attr("stroke-width", 2);
+
+  		var new_circle = { cx: cx, 
+                         cy: cy, 
+                         tempRect: tempRect };
+
+      foodToBeEaten.push(new_circle);
+      if (canStartTransition) window.setTimeout(function(){ updateFlat(foodToBeEaten.shift()); }, 500);
+  	})
+
+    
+
+  	content.select("#flats-home-container").style("box-shadow", "0 0 10px 10px #bbb inset");
+  	
+  </script>
+
+</body>
+</html>
