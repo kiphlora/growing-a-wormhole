@@ -1,0 +1,333 @@
+html, body {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	height: calc(100vh);
+}
+
+
+
+.container {
+	min-height:100%;
+  position:relative;
+}
+
+.open-button {
+	transition: transform 200ms ease-in-out;
+	transform: scale(1);
+	position: absolute;
+	top: calc(50vh - 50px);
+	bottom: calc(50vh - 50px);
+	left: calc(50vw - 50px);
+	right: calc(50vw - 50px);
+	z-index: 200;
+	height: 100px;
+	width: 100px;
+	text-align: center;
+	background-color: white;
+	border-radius: 50px;
+	border: 1px solid white;
+	color: #0099ff;
+	font-size: 18px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.open-button:hover:not(.open-button-end) {
+	transition: transform 200ms ease-in-out;
+	transform: scale(1.2);
+}
+
+.open-button-end {
+	/*transition: color, background-color 1100ms linear;*/
+	transition: transform 100ms ease-in-out;
+	transform: scale(0);
+	/*color: transparent;*/
+	/*background-color: transparent;*/
+	pointer-events: none;
+	/*border: 1px solid transparent;*/
+}
+
+svg {
+	cursor: pointer;
+	display: block;
+}
+
+
+
+.hero-header {
+	transition: height 1100ms, border-bottom 1100ms ease-in-out;
+	position: absolute;
+	top: 0;
+	/*-webkit-clip-path: polygon(0 0, 100% 0, 100% 45%, 0 100%);*/
+  /*clip-path:         polygon(0 0, 100% 0, 100% 45%, 0 100%);*/
+
+  -webkit-clip-path: polygon(0 0, 100% 0, 100% 65%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 65%, 0 100%);
+
+	min-width: 960px;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	/* Standard syntax (must be last) */
+	
+	/*background: linear-gradient(#0033ff, #0099ff);*/
+	background: #0055ff;
+
+  height: 140px;
+  color: white;
+  z-index: 100;
+  border-bottom: 0px solid #0055ff;
+}
+
+.hero-header-start {
+	position: absolute;
+	/*-webkit-clip-path: polygon(0 0, 100% 0, 100% 45%, 0 100%);*/
+  /*clip-path:         polygon(0 0, 100% 0, 100% 45%, 0 100%);*/
+
+  -webkit-clip-path: polygon(0 0, 100% 0, 100% 65%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 65%, 0 100%);
+
+	min-width: 960px;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	/* Standard syntax (must be last) */
+
+	/*background: linear-gradient(#0033ff, #0099ff);*/
+	background: #0055ff;
+
+  height: calc(60vh);
+  color: white;
+  z-index: 100;
+  border-bottom: 5px solid #0055ff;
+}
+
+.my-name {
+	float: left;
+	padding: 30px;
+	font-size: 3.5em;
+	font-family: "Dosis", Helvetica;
+	text-shadow: 0 1px 0 color;
+
+}
+
+.nav {
+	position: relative;
+	/*float: right;*/
+	font-family: "Dosis", Helvetica;
+	/*padding: 15px;*/
+	/*padding-right: 30px;*/
+	/*border: 1px solid black;*/
+
+}
+
+a {
+	outline: none;
+}
+.nav i {
+	padding: 25px;
+	font-size: 2em;
+}
+
+.nav i:hover {
+	text-decoration: underline;
+}
+
+.nav div {
+	padding: 5px;
+}
+
+.nav a {
+	text-decoration: none;
+	color: white;
+}
+
+.hero-footer {
+	transition: height 1100ms, border-top 1100ms ease-in-out;
+	position: absolute;
+	bottom: 0;
+	/*position:absolute;*/
+  /*bottom:-350px;*/
+  /*margin-top: 350px;*/
+  min-width: 960px;
+	width: 100%;
+	font-family: "Dosis", Helvetica;
+	/*-webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 75% 100%);*/
+	/*clip-path: polygon(0 70%, 100% 0, 100% 100%, 0 100%);*/
+	/* Standard syntax (must be last) */
+
+	/*background: linear-gradient(#0099ff, #0033ff);*/
+	background: #0055ff;
+
+	-webkit-clip-path: polygon(0 35%, 100% 0, 100% 100%, 0 100%);
+	clip-path: polygon(0 35%, 100% 0, 100% 100%, 0 100%);
+
+  height: 150px;
+  color: white;
+  z-index: 100;
+  border-top: 0px solid #0055ff;
+}
+
+.hero-footer-start {
+	position: absolute;
+	bottom: 0;
+	/*position:absolute;*/
+  /*bottom:-350px;*/
+  /*margin-top: 350px;*/
+  min-width: 960px;
+	width: 100%;
+	font-family: "Dosis", Helvetica;
+	/*-webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 75% 100%);*/
+	/*clip-path: polygon(0 70%, 100% 0, 100% 100%, 0 100%);*/
+	/* Standard syntax (must be last) */
+
+	/*background: linear-gradient(#0099ff, #0033ff);*/
+	background: #0055ff;
+
+	-webkit-clip-path: polygon(0 35%, 100% 0, 100% 100%, 0 100%);
+	clip-path: polygon(0 35%, 100% 0, 100% 100%, 0 100%);
+  
+  height: calc(60vh);
+  color: white;	
+  z-index: 100;
+  border-top: 5px solid #0055ff;
+}
+
+.hero-footer i {
+	margin-left: -5px;
+	padding-right: 5px;
+}
+
+.footer-info {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	padding: 10px;
+	padding-top: 90px;
+	color: white;
+}
+
+.footer-info a {
+	color: white;
+	text-decoration: none;
+}
+
+.footer-info div {
+	padding: 5px;
+	padding-bottom: 0;
+	margin: 0;
+}
+
+.hero-content-wrapper {
+	width: 100%;
+	/* min-height calculation: 350px for the footer height; 140px for the header height */
+	min-height: calc(100vh - 150px - 140px);
+	margin: 0 auto;
+}
+
+.hero-content-wrapper-start {
+	width: 100%;
+	position: absolute;
+	top: 140px;
+	z-index: 1;
+}
+
+.item {
+	margin: 0;
+	padding: 15px;
+	padding-bottom: 5px;
+	line-height: 1.5em;
+	margin-bottom: 5px;
+	height: 130px;
+}
+
+.item a {
+	text-decoration: none;
+}
+
+.item a:hover {
+	text-decoration: underline;
+}
+
+.item p {
+	margin: 0;
+	padding: 0;
+	color: #555;
+	font-size: 18px;
+	font-family: "PT Serif", serif;
+}
+
+.preview {
+	margin: 0;
+	padding: 0;
+  object-fit: cover;
+  width: 440px;
+  height: 95px;
+  border: 1px solid #bbb;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.about-nav, .portfolio-nav {
+	border: 1px solid transparent;
+	text-align: center;
+}
+
+.active-link {
+	border: 1px dashed white;
+	
+}
+
+.intro-content a {
+	outline: 0;
+	color: #999;
+
+}
+
+.intro-content {
+	font-size: 20px;
+	font-weight: 100;
+	line-height: 30px;
+}
+
+.intro-content p {
+	overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+a:hover, a:active, a:focus {
+  /* styling for any way a link is about to be used */
+}
+
+.intro-content .notes {
+	/*color: #ff9900;*/
+	/*color: #9900fe;*/
+	/*color: #48c448;*/
+	color: #ff3800;
+}
+
+.intro-content h3 {
+	color: #999;
+	font-weight: 500;
+	margin-top: 30px;
+	margin-bottom: 10px;
+}
+
+
+
+a:active {
+	color: #999;
+}
+
+iframe {
+	width: 960px;
+	height: 300px;
+	overflow: hidden;
+	border: 1px solid #999;
+	/*margin-bottom: 100px;*/
+}
