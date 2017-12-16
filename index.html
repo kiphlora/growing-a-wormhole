@@ -13,12 +13,74 @@
 	<script src="js/util.js"></script>
 	<style>
 
-		
+#dialogue_box {
+  position: absolute;
+  top: calc(50vh - 50px);
+  left: calc(50vh);
+  width: 240px;
+  border: 1px solid #000;
+  background: #333;
+  border-radius: 10px;
+  color: white;
+  z-index: 90;
+  padding: 10px;
+  opacity: 0.9;
+  box-shadow: 5px 5px 3px 3px #999;
+}
+
+.arrow_box {
+  position: relative;
+  background: #333;
+  border: 4px solid #000;
+}
+/*.arrow_box:after, .arrow_box:before {
+  top: 100%;
+  left: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+
+.arrow_box:after {
+  border-color: rgba(51, 51, 51, 0);
+  border-top-color: #333;
+  border-width: 5px;
+  margin-left: -5px;
+}
+.arrow_box:before {
+  border-color: rgba(0, 0, 0, 0);
+  border-top-color: #000;
+  border-width: 8px;
+  margin-left: -8px;
+}
+*/
+#dialogue_box #title {
+  border-bottom: 2px solid #ddd;
+  margin-right: 34%;
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+#dialogue_box #line {
+  font-family: Futura;
+  font-weight: 100;
+  font-size: 14px;
+}
 
 	</style>
 </head>
 <body>
 	<button class="open-button">Open</button>
+  <div id="dialogue_box" class="arrow_box">
+    <div id="title"></div>
+    <div id="line"></div>
+  </div>
+
   <div class="container">
 		<header class="hero-header">
 			<div class="my-name">Growing a Wormhole</div>
@@ -49,12 +111,39 @@
   	var header = d3.select("header");
   	var footer = d3.select("footer");
   	var content = d3.select(".hero-content-wrapper");
+    var dialogue_box = d3.select("#dialogue_box");
+
+    var svg = content.select("#flats-home")
+        .attr("width", 960)
+        .attr("height", 490);
 
   	var flat = [];
   	var flat_circles;
   	var startingRadius = 8;
   	var radiusGrowthRate = 3;
     var strokeWidth = 6;
+
+    var OPEN_GAME = 0;
+    var INTRO_DIALOGUE = 1;
+    var PLANT_SEEDS = 2;
+
+    var gameState = OPEN_GAME;
+    var dialogue_index = -1;
+
+    var narratorLoc = { x: window.innerWidth / 2 - 960/2 + 30, y: window.innerHeight/2 - 490/2 + 30 };
+    var flatLoc = {x: window.innerWidth / 2 - 132, y: window.innerHeight / 2 - 110};
+
+    var dialogue = [{ speaker: "Narrator", line: "Welcome. That circle over there is a baby wormhole.", location: narratorLoc},
+                    { speaker: "Narrator", line: "It's name is Flat.", location: narratorLoc},
+                    { speaker: "Flat", line: "Waaaahhhh. So bored!", location: flatLoc},
+                    { speaker: "Narrator", line: "As you can see, Flat wants to play.", location: narratorLoc},
+                    
+                    { speaker: "Narrator", line: "I need to step out for a while. Do you mind playing catch with Flat?", location: narratorLoc},
+                    { speaker: "Narrator", line: "It's very simple. Just plant a seed by clicking the ground.", location: narratorLoc},
+                    { speaker: "Narrator", line: "It will sprout into a ring that Flat will run toward.", location: narratorLoc},
+                    { speaker: "Narrator", line: "(If you feel lazy, just plant a bunch of seeds all over the place. It'll keep Flat busy for a while.)", location: narratorLoc},
+                    { speaker: "Narrator", line: "Thanks!", location: narratorLoc} ];
+
 
   	header.classed("hero-header-start", true);
   	footer.classed("hero-footer-start", true);
@@ -67,7 +156,44 @@
   		.on("click", function(){
   			transitionHeaderFooter();
   			initFlat();
+        gameState = INTRO_DIALOGUE;
+        dialogue_index += 1;
+        var d = dialogue[dialogue_index];
+        updateDialogue(d);
+        d3.event.stopPropagation();
   		})
+
+    window.addEventListener("click", function(){
+      if (gameState === INTRO_DIALOGUE) {
+        dialogue_index += 1;
+        if (dialogue_index > dialogue.length - 1) {
+          gameState = PLANT_SEEDS;
+          dialogue_box.remove();
+          return;
+        }
+
+        var d = dialogue[dialogue_index];
+        updateDialogue(d);
+      }
+    })
+
+
+    function updateDialogue(d) {
+      var speaker = d.speaker;
+      var line = d.line;
+      var location = d.location;
+
+      dialogue_box
+          .style("left", location.x + "px")
+          .style("top", location.y + "px")
+          .classed("arrow_box", speaker === "Flat" ? true : false);
+
+      dialogue_box.select("#title")
+          .text(speaker);
+
+      dialogue_box.select("#line")
+          .text(line);
+    }
   	
 
   	function transitionHeaderFooter() {
@@ -91,6 +217,19 @@
   				.attr("stroke-width", strokeWidth);
   	}
 
+    function dist(a, b) {
+      return Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+    }
+
+    function getCircleCenter(circle) {      
+      return new Point(+circle.attr("cx"), +circle.attr("cy"));
+    }
+
+    function Point(x,y){
+      this.x = x;
+      this.y = y;
+    }
+
   	function updateFlat(new_circle) {
       canStartTransition = false;
   		flat.push(new_circle);
@@ -113,13 +252,17 @@
           .ease(d3.easeElastic)
           .attr("r", function(d,i){ return startingRadius + radiusGrowthRate * i; });
 
-      new_circle.tempRect.remove();
+      var maxDist = dist(new Point(0,0), new Point(960, 490));
+      var distProp = dist(getCircleCenter(d3.select(flat_circles.node())), new Point(new_circle.cx, new_circle.cy)) / maxDist;
+
+      new_circle.tempCircle.remove();
 
   		flat_circles
   			.transition()
   				.delay(function(d,i){ return i * 800 / flat.length; })
   				// .duration(200 * flat.length)
-          .duration(2000)
+          .duration(3000 * distProp)
+          // .duration(2000)
           .ease(d3.easeQuadInOut)
   				.attr("cx", new_circle.cx)
   				.attr("cy", new_circle.cy)
@@ -134,29 +277,27 @@
   			});
   	}
 
-  	var svg = content.select("#flats-home")
-  			.attr("width", 960)
-  			.attr("height", 490);
-
   	svg.on("click", function(){
-  		var mouse_coords = d3.mouse(this);
-      var cx = mouse_coords[0];
-      var cy = mouse_coords[1];
-      var tempRect = svg.append("circle")
-          .attr("cx", cx)
-          .attr("cy", cy)
-          .attr("r", 3)
-          .attr("fill", "#ff0099")
-          // .attr("stroke", "#ff9900")
-          .attr("fill-opacity", 1);
-          // .attr("stroke-width", 2);
+      if (gameState === PLANT_SEEDS) {
+    		var mouse_coords = d3.mouse(this);
+        var cx = mouse_coords[0];
+        var cy = mouse_coords[1];
+        var tempCircle = svg.append("circle")
+            .attr("cx", cx)
+            .attr("cy", cy)
+            .attr("r", 3)
+            .attr("fill", "#ff0099")
+            // .attr("stroke", "#ff9900")
+            .attr("fill-opacity", 1);
+            // .attr("stroke-width", 2);
 
-  		var new_circle = { cx: cx, 
-                         cy: cy, 
-                         tempRect: tempRect };
+    		var new_circle = { cx: cx, 
+                           cy: cy, 
+                           tempCircle: tempCircle };
 
-      foodToBeEaten.push(new_circle);
-      if (canStartTransition) window.setTimeout(function(){ updateFlat(foodToBeEaten.shift()); }, 500);
+        foodToBeEaten.push(new_circle);
+        if (canStartTransition) window.setTimeout(function(){ updateFlat(foodToBeEaten.shift()); }, 500);
+      }
   	})
 
     
